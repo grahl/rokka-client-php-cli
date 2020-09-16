@@ -94,6 +94,12 @@
         >
             <tag name="console.command" command="image:copy"/>
         </service>
+      <service parent="rokka.command.base"
+               id="rokka.command.image_copy_mine"
+               class="RokkaCli\Command\ImageCopyMineCommand"
+      >
+        <tag name="console.command" command="image:copy"/>
+      </service>
         <service parent="rokka.command.base"
                  id="rokka.command.image_copy_all"
                  class="RokkaCli\Command\ImageCopyAllCommand"
