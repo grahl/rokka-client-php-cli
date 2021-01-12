@@ -4,7 +4,6 @@ namespace RokkaCli\Command;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use Rokka\Client\Core\SourceImage;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,9 +22,6 @@ class ImageCopyMineCommand extends ImageCopyCommand
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
      * @throws ClientException
      * @throws GuzzleException
      * @throws \RuntimeException
@@ -62,7 +58,7 @@ class ImageCopyMineCommand extends ImageCopyCommand
 
         $output->writeln('Reading images to be cloned from <info>'.$orgSource.'</info> to <info>'.$orgDest.'</info>');
 
-        while (count($hashes) > 0) {
+        while (\count($hashes) > 0) {
             try {
                 $output->writeln('Copying '.\count($hashes).' images from <comment>'.$orgSource.'</comment> to <comment>'.$orgDest.'</comment>');
 
@@ -83,7 +79,7 @@ class ImageCopyMineCommand extends ImageCopyCommand
                     return -1;
                 }
             }
-          $hashes = $this->fetchData();
+            $hashes = $this->fetchData();
         }
 
         // Avoid further processing if no images have been loaded.
@@ -100,11 +96,10 @@ class ImageCopyMineCommand extends ImageCopyCommand
     }
 
     /**
-     * @param string              $destOrg
-     * @param string              $sourceOrg
-     * @param array               $hashes
-     * @param OutputInterface     $output
-     * @param \Rokka\Client\Image $client
+     * @param string          $destOrg
+     * @param string          $sourceOrg
+     * @param array           $hashes
+     * @param OutputInterface $output
      *
      * @throws GuzzleException
      * @throws \RuntimeException
@@ -120,20 +115,37 @@ class ImageCopyMineCommand extends ImageCopyCommand
         }
 
         return $result;
-    }/**
- * @param int $limit
- * @param array $input
- * @return array
- */
-  protected function fetchData(): array {
-    $limit = 100;
-    $hashes = [];
-    $input = explode("\n", file_get_contents("hashes.txt"));
-    for ($i = 0; $i < $limit; $i++) {
-      $hashes[] = $input[$i];
     }
-    file_put_contents('hashes.txt', implode("\n", array_slice($input, $limit - 1)));
 
-    return $hashes;
-  }
+    /**
+     * @param int   $limit
+     * @param array $input
+     */
+    protected function fetchData(): array
+    {
+        $limit = 50;
+        $hashes = [];
+        $file = file_get_contents(__DIR__.'/../../hashes.txt');
+        if (false === $file) {
+            exit('Missing file');
+        }
+
+        if (empty($file)) {
+            exit('EOF');
+        }
+
+        $input = preg_split('/\n|\r\n?/', $file);
+
+        if (\count($input) < $limit) {
+            $limit = \count($input);
+        }
+
+        for ($i = 0; $i < $limit; ++$i) {
+            $hashes[] = $input[$i];
+        }
+
+        file_put_contents(__DIR__.'/../../hashes.txt', implode("\n", \array_slice($input, $limit - 1)));
+
+        return $hashes;
+    }
 }
