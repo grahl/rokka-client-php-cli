@@ -144,7 +144,7 @@ class ImageCopyMineCommand extends ImageCopyCommand
             $hashes[] = $input[$i];
         }
 
-        file_put_contents(__DIR__.'/../../hashes.txt', implode("\n", \array_slice($input, $limit - 1)));
+        file_put_contents(__DIR__.'/../../hashes.txt', implode("\n", \array_slice($input, $limit)));
 
         return $hashes;
     }
